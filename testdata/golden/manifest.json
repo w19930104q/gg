@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "cases": {
+    "bezier": {
+      "width": 240,
+      "height": 240,
+      "sha256": "620c02138935b6700e023cc7700766ae22f2058da6be68797c19ab4058367941"
+    },
+    "clip": {
+      "width": 240,
+      "height": 240,
+      "sha256": "edb265ddbd4b94ffadbdf0ec7c88f1f2824e698ab2d6d457f549ae12e0b1800a"
+    },
+    "composite": {
+      "width": 240,
+      "height": 240,
+      "sha256": "84370c15064b0c59864b77aa74f51df1713cd28291fb8c6c21e19f8a21e2443d"
+    },
+    "gradient": {
+      "width": 240,
+      "height": 240,
+      "sha256": "df5c2fc957d4197ce870a6c82b3b48b8ff6e8a8ef559c9409561b4c31cddb8d2"
+    },
+    "pattern": {
+      "width": 240,
+      "height": 240,
+      "sha256": "a4d755fa5d12135ba0ea120f5028e65092715d987e18a83e250db6162ae89922"
+    },
+    "rotated-image": {
+      "width": 240,
+      "height": 240,
+      "sha256": "3ebf931e1ac8ca009785eeea7bc316a2e59bfc4321fed54038c008a526fc53f3"
+    },
+    "text": {
+      "width": 240,
+      "height": 240,
+      "sha256": "0ec8f725d9060dbcd95385bade679a680a7be9ffcc100b30699362f5df4b4cfd"
+    }
+  }
+}
