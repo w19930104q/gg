@@ -902,18 +902,35 @@ func (dc *Context) InvertY() {
 
 // Push saves the current state of the context for later retrieval. These
 // can be nested.
+//
+// The current path is not part of the saved state and survives a matching
+// Pop, but its backing arrays are copied so path construction inside the
+// pushed section cannot clobber path segments that existed before the Push.
 func (dc *Context) Push() {
 	x := *dc
+	x.strokePath = append(raster.Path(nil), dc.strokePath...)
+	x.fillPath = append(raster.Path(nil), dc.fillPath...)
 	dc.stack = append(dc.stack, &x)
 }
 
 // Pop restores the last saved context state from the stack.
+//
+// The current path and the clipping mask are not part of the saved state.
+// Clips created inside a Push always survive the matching Pop. For the path:
+// if the pushed section leaves a current path (the common case, e.g.
+// DrawPoint), that live path is kept; if the pushed section consumed its path
+// (e.g. Clip), the path that existed before the Push is restored from the
+// saved snapshot instead of being lost.
 func (dc *Context) Pop() {
 	before := *dc
 	s := dc.stack
 	x, s := s[len(s)-1], s[:len(s)-1]
 	*dc = *x
 	dc.mask = before.mask
+	if len(before.strokePath) == 0 && len(before.fillPath) == 0 && !before.hasCurrent {
+		// The pushed section consumed its path: restore the pre-Push path.
+		return
+	}
 	dc.strokePath = before.strokePath
 	dc.fillPath = before.fillPath
 	dc.start = before.start
