@@ -1,2 +1,6 @@
+# Rendered output from ad-hoc runs and the -save test flag
 *.png
-
+# Golden baselines are checked in, so un-ignore them
+!testdata/golden/*.png
+# Failure diagnostics produced by golden_test.go are never committed
+testdata/golden-failure/
