@@ -289,6 +289,7 @@ func TestDashes(t *testing.T) {
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
 	rnd := rand.New(rand.NewSource(99))
+	before := hash(dc)
 	for i := 0; i < 100; i++ {
 		x1 := rnd.Float64() * 100
 		y1 := rnd.Float64() * 100
@@ -301,7 +302,39 @@ func TestDashes(t *testing.T) {
 		dc.Stroke()
 	}
 	saveImage(dc, "TestDashes")
-	checkHash(t, dc, "d188069c69dcc3970edfac80f552b53c")
+	// Rendering with dashes enabled must actually paint something. Pixel
+	// hashes are not asserted here: they depend on the exact freetype
+	// rasterizer build, while dash geometry is covered precisely in
+	// dash_test.go.
+	if hash(dc) == before {
+		t.Fatal("dashed strokes produced no changes to the image")
+	}
+}
+
+func TestDashClosedRenderAndState(t *testing.T) {
+	dc := NewContext(120, 120)
+	dc.SetRGB(0, 0, 0)
+	dc.Clear()
+	dc.SetRGB(1, 1, 1)
+	dc.SetLineWidth(2)
+	dc.SetDash(8, 6)
+	dc.SetDashOffset(3)
+	dc.DrawRectangle(10, 10, 100, 100)
+	dc.Stroke()
+	if len(dc.dashes) != 2 || dc.dashOffset != 3 {
+		t.Fatalf("dash state not retained: %v / %v", dc.dashes, dc.dashOffset)
+	}
+	// Disabling dashes and stroking again must work and change the image.
+	before := hash(dc)
+	dc.SetDash()
+	if dc.dashes != nil {
+		t.Fatalf("SetDash() with no args should disable dashing, got %v", dc.dashes)
+	}
+	dc.DrawCircle(60, 60, 40)
+	dc.Stroke()
+	if hash(dc) == before {
+		t.Fatal("solid stroke after disabling dashes painted nothing")
+	}
 }
 
 func BenchmarkCircles(b *testing.B) {

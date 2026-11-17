@@ -159,14 +159,23 @@ func (dc *Context) EncodeJPG(w io.Writer, o *jpeg.Options) error {
 }
 
 // SetDash sets the current dash pattern to use. Call with zero arguments to
-// disable dashes. The values specify the lengths of each dash, with
-// alternating on and off lengths.
+// disable dashes. The values specify the lengths of each dash, alternating
+// between "on" (painted) and "off" (gap) lengths, measured in user-space
+// units along the arc length of the path. A single value is expanded to an
+// equal on/off pattern (e.g. SetDash(4) is equivalent to SetDash(4, 4)).
+// The pattern repeats along every subpath; on a closed subpath dashes are
+// laid out around the loop so that a dash crossing the start/end seam joins
+// up correctly rather than restarting. Entries must be positive and finite;
+// an invalid pattern (zero, negative or NaN) disables dashing.
 func (dc *Context) SetDash(dashes ...float64) {
 	dc.dashes = dashes
 }
 
-// SetDashOffset sets the initial offset into the dash pattern to use when
-// stroking dashed paths.
+// SetDashOffset sets the phase offset into the dash pattern, measured in
+// user-space units along the path, to use when stroking dashed paths. A
+// positive value advances the pattern along the path (the path starts at a
+// later position within the repeating pattern). Offsets larger than one
+// pattern period, or negative offsets, wrap around.
 func (dc *Context) SetDashOffset(offset float64) {
 	dc.dashOffset = offset
 }
